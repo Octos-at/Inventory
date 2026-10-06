@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Octos · Inventory Manager</title>
+
+    <!-- App icon for mobile home screen / desktop shortcut -->
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="shortcut icon" href="logo.png">
+
+    <!-- PWA meta tags for mobile installation -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Octos Inventory">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0b2b3b">
+
     <style>
         * {
             box-sizing: border-box;
@@ -497,7 +510,6 @@
     <!-- Header with single logo (inverts in dark mode via CSS filter) -->
     <div class="header">
         <div class="logo-section">
-            <!-- Uses the bright logo (dark text) and inverts it in dark mode -->
             <img class="logo" src="logo.png" alt="Octos">
             <h1>
                 Inventory
