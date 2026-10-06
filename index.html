@@ -57,12 +57,12 @@
         }
 
         .logo {
-            height: 48px;
+            height: 56px;
             width: auto;
             display: block;
         }
 
-        /* Light mode: show bright logo (dark text on light background) */
+        /* Light mode: show bright logo (dark text) */
         .logo-light {
             display: block;
         }
@@ -71,7 +71,7 @@
             display: none;
         }
 
-        /* Dark mode: show dark logo (light text on dark background) */
+        /* Dark mode: show dark logo (light text) */
         body.dark .logo-light {
             display: none;
         }
@@ -198,15 +198,6 @@
 
         body.dark .search-box input::placeholder {
             color: #6b7f94;
-        }
-
-        .search-box span {
-            color: #406e7e;
-            font-size: 1.1rem;
-        }
-
-        body.dark .search-box span {
-            color: #94a3b8;
         }
 
         /* --- Stats bar --- */
@@ -515,17 +506,13 @@
 </head>
 <body>
 <div class="app">
-    <!-- Header with logo (bright in light mode, dark in dark mode) -->
+    <!-- Header with logo -->
     <div class="header">
         <div class="logo-section">
             <!-- BRIGHT logo (dark text) – shown in LIGHT mode -->
-            <img class="logo logo-light" 
-                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200'%3E%3Ctext x='50' y='150' font-family='Georgia, serif' font-size='140' font-weight='bold' fill='%230b2b3b'%3EOCTOS%3C/text%3E%3C/svg%3E" 
-                 alt="Octos">
+            <img class="logo logo-light" src="logo-light.png" alt="Octos">
             <!-- DARK logo (light text) – shown in DARK mode -->
-            <img class="logo logo-dark" 
-                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200'%3E%3Ctext x='50' y='150' font-family='Georgia, serif' font-size='140' font-weight='bold' fill='%23ffffff'%3EOCTOS%3C/text%3E%3C/svg%3E" 
-                 alt="Octos">
+            <img class="logo logo-dark" src="logo-dark.png" alt="Octos">
             <h1>
                 Inventory
                 <span>live stock</span>
@@ -534,7 +521,7 @@
         <button class="btn-darkmode" id="darkModeToggle">Dark</button>
     </div>
 
-    <!-- Subhead: description + search -->
+    <!-- Subhead -->
     <div class="subhead">
         <p>Part numbers &amp; components · increment / decrement stock</p>
         <div class="search-box">
@@ -561,9 +548,7 @@
                     <th>Stock actions</th>
                 </tr>
             </thead>
-            <tbody id="tableBody">
-                <!-- rendered by JS -->
-            </tbody>
+            <tbody id="tableBody"></tbody>
         </table>
     </div>
     <div class="footer-note">
@@ -770,7 +755,7 @@
         }
 
         // ----------------------------------------------------------------
-        // 4. Dark mode toggle – switches logo via CSS
+        // 4. Dark mode toggle
         // ----------------------------------------------------------------
         darkModeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark');
@@ -778,7 +763,7 @@
         });
 
         // ----------------------------------------------------------------
-        // 5. Search listener
+        // 5. Search
         // ----------------------------------------------------------------
         searchInput.addEventListener('input', () => {
             render();
