@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Octos · Inventory Manager</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        /* --- Light mode (default) --- */
+        body {
+            background: #f4f7fc;
+            margin: 0;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        body.dark {
+            background: #1a1f2a;
+        }
+
+        .app {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 20, 30, 0.1);
+            padding: 2rem 2rem 2.5rem;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        body.dark .app {
+            background: #202632;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            color: #e6edf3;
+        }
+
+        /* --- Header with logo --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            height: 48px;
+            width: auto;
+            display: block;
+        }
+
+        /* Light mode: show bright logo (dark text on light background) */
+        .logo-light {
+            display: block;
+        }
+
+        .logo-dark {
+            display: none;
+        }
+
+        /* Dark mode: show dark logo (light text on dark background) */
+        body.dark .logo-light {
+            display: none;
+        }
+
+        body.dark .logo-dark {
+            display: block;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.8rem;
+            letter-spacing: -0.5px;
+            color: #0b2b3b;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        body.dark .header h1 {
+            color: #e6edf3;
+        }
+
+        .header h1 span {
+            background: #0b2b3b;
+            color: white;
+            font-size: 0.9rem;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            font-weight: 400;
+        }
+
+        body.dark .header h1 span {
+            background: #2e3847;
+            color: #b0c9d9;
+        }
+
+        /* --- Dark mode toggle button --- */
+        .btn-darkmode {
+            background: #eef3f8;
+            border: 1px solid #bdd2df;
+            border-radius: 40px;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1e4b5e;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .btn-darkmode:hover {
+            background: #dde9f2;
+        }
+
+        body.dark .btn-darkmode {
+            background: #2e3847;
+            border-color: #3d4a5c;
+            color: #b0c9d9;
+        }
+
+        body.dark .btn-darkmode:hover {
+            background: #3d4a5c;
+        }
+
+        .btn-darkmode:active {
+            transform: scale(0.96);
+        }
+
+        /* --- Subhead --- */
+        .subhead {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            color: #406e7e;
+            border-bottom: 1px solid #d9e5ec;
+            padding-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        body.dark .subhead {
+            border-bottom-color: #2e3847;
+            color: #94a3b8;
+        }
+
+        .subhead p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #eef3f8;
+            border-radius: 40px;
+            padding: 0.3rem 1rem;
+        }
+
+        body.dark .search-box {
+            background: #2e3847;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            padding: 0.5rem 0.5rem 0.5rem 0;
+            font-size: 0.95rem;
+            width: 200px;
+            outline: none;
+            color: #0b2b3b;
+        }
+
+        body.dark .search-box input {
+            color: #e6edf3;
+        }
+
+        .search-box input::placeholder {
+            color: #7b9aab;
+        }
+
+        body.dark .search-box input::placeholder {
+            color: #6b7f94;
+        }
+
+        .search-box span {
+            color: #406e7e;
+            font-size: 1.1rem;
+        }
+
+        body.dark .search-box span {
+            color: #94a3b8;
+        }
+
+        /* --- Stats bar --- */
+        .stats-bar {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #1f5b6e;
+            font-weight: 500;
+            flex-wrap: wrap;
+        }
+
+        body.dark .stats-bar {
+            color: #b0c9d9;
+        }
+
+        .stats-bar div {
+            background: #e6f0f7;
+            border-radius: 30px;
+            padding: 0.4rem 1.2rem;
+        }
+
+        body.dark .stats-bar div {
+            background: #2e3847;
+        }
+
+        /* --- Table --- */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 1.5rem;
+            border: 1px solid #d0e0e9;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        body.dark .table-wrapper {
+            border-color: #2e3847;
+            background: #1e2530;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 700px;
+        }
+
+        th {
+            background: #e1eef7;
+            color: #0b2b3b;
+            font-weight: 600;
+            text-align: left;
+            padding: 1rem 1.2rem;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            border-bottom: 1px solid #bdd2df;
+        }
+
+        body.dark th {
+            background: #2a3442;
+            color: #b0c9d9;
+            border-bottom-color: #3d4a5c;
+        }
+
+        td {
+            padding: 0.9rem 1.2rem;
+            border-bottom: 1px solid #e2edf4;
+            color: #1b4254;
+            vertical-align: middle;
+        }
+
+        body.dark td {
+            border-bottom-color: #2e3847;
+            color: #cbd5e1;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #f6fbfe;
+        }
+
+        body.dark tr:hover td {
+            background: #262f3c;
+        }
+
+        /* --- Cell styles --- */
+        .pn {
+            font-weight: 600;
+            color: #0d4b63;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            letter-spacing: 0.2px;
+        }
+
+        body.dark .pn {
+            color: #7ab7d4;
+        }
+
+        .desc {
+            color: #1a4b5e;
+            font-weight: 500;
+        }
+
+        body.dark .desc {
+            color: #cbd5e1;
+        }
+
+        .cat {
+            background: #e1eef7;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+            color: #0b3d4f;
+            white-space: nowrap;
+        }
+
+        body.dark .cat {
+            background: #2e3847;
+            color: #b0c9d9;
+        }
+
+        .qty-badge {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #133e4e;
+            min-width: 2.5rem;
+            display: inline-block;
+            text-align: center;
+        }
+
+        body.dark .qty-badge {
+            color: #cbd5e1;
+        }
+
+        .qty-badge.low {
+            color: #b33e2c;
+        }
+
+        body.dark .qty-badge.low {
+            color: #f87171;
+        }
+
+        /* --- Buttons & Inputs --- */
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: #f0f6fa;
+            border: 1px solid #bdd2df;
+            color: #124b60;
+            width: 2.2rem;
+            height: 2.2rem;
+            border-radius: 40px;
+            font-size: 1.3rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            user-select: none;
+            line-height: 1;
+            padding-bottom: 2px;
+        }
+
+        .btn:hover {
+            background: #d7e8f3;
+            border-color: #7ea9bf;
+        }
+
+        .btn:active {
+            background: #b9d4e5;
+            transform: scale(0.94);
+        }
+
+        .btn.plus {
+            background: #e0f0e8;
+            border-color: #96c7b2;
+            color: #1e6b4c;
+        }
+
+        .btn.plus:hover {
+            background: #c8e6d9;
+        }
+
+        .btn.minus {
+            background: #faeae7;
+            border-color: #e0b9b1;
+            color: #a14330;
+        }
+
+        .btn.minus:hover {
+            background: #f5d8d2;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            border-color: #cddce6;
+            background: #f4f9fd;
+        }
+
+        body.dark .btn {
+            background: #2a3442;
+            border-color: #3d4a5c;
+            color: #b0c9d9;
+        }
+
+        body.dark .btn:hover {
+            background: #3d4a5c;
+            border-color: #5b6f82;
+        }
+
+        body.dark .btn.plus {
+            background: #1e3a2e;
+            border-color: #2e5e4a;
+            color: #6ee7b7;
+        }
+
+        body.dark .btn.plus:hover {
+            background: #2a4a3a;
+        }
+
+        body.dark .btn.minus {
+            background: #3a2525;
+            border-color: #5e3a3a;
+            color: #fca5a5;
+        }
+
+        body.dark .btn.minus:hover {
+            background: #4a3030;
+        }
+
+        body.dark .btn:disabled {
+            background: #1e2530;
+            border-color: #2e3847;
+            color: #4a5a6a;
+        }
+
+        .edit-input {
+            width: 3.5rem;
+            padding: 0.3rem 0.2rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            border: 1px solid #bdd2df;
+            border-radius: 12px;
+            background: white;
+            color: #0b2b3b;
+            outline: none;
+        }
+
+        body.dark .edit-input {
+            background: #1a1f2a;
+            border-color: #3d4a5c;
+            color: #e6edf3;
+        }
+
+        .edit-input:focus {
+            border-color: #4d8aa8;
+            box-shadow: 0 0 0 2px rgba(77, 138, 168, 0.2);
+        }
+
+        body.dark .edit-input:focus {
+            border-color: #5b8faa;
+            box-shadow: 0 0 0 2px rgba(91, 143, 170, 0.3);
+        }
+
+        .none-message {
+            padding: 3rem;
+            text-align: center;
+            color: #7b9aab;
+            font-style: italic;
+        }
+
+        body.dark .none-message {
+            color: #6b7f94;
+        }
+
+        .footer-note {
+            margin-top: 1.8rem;
+            font-size: 0.8rem;
+            color: #7b9aab;
+            text-align: right;
+            border-top: 1px solid #d9e5ec;
+            padding-top: 1rem;
+        }
+
+        body.dark .footer-note {
+            border-top-color: #2e3847;
+            color: #6b7f94;
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <!-- Header with logo (bright in light mode, dark in dark mode) -->
+    <div class="header">
+        <div class="logo-section">
+            <!-- BRIGHT logo (dark text) – shown in LIGHT mode -->
+            <img class="logo logo-light" 
+                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200'%3E%3Ctext x='50' y='150' font-family='Georgia, serif' font-size='140' font-weight='bold' fill='%230b2b3b'%3EOCTOS%3C/text%3E%3C/svg%3E" 
+                 alt="Octos">
+            <!-- DARK logo (light text) – shown in DARK mode -->
+            <img class="logo logo-dark" 
+                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200'%3E%3Ctext x='50' y='150' font-family='Georgia, serif' font-size='140' font-weight='bold' fill='%23ffffff'%3EOCTOS%3C/text%3E%3C/svg%3E" 
+                 alt="Octos">
+            <h1>
+                Inventory
+                <span>live stock</span>
+            </h1>
+        </div>
+        <button class="btn-darkmode" id="darkModeToggle">Dark</button>
+    </div>
+
+    <!-- Subhead: description + search -->
+    <div class="subhead">
+        <p>Part numbers &amp; components · increment / decrement stock</p>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Filter by PN or description..." autocomplete="off">
+        </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="stats-bar" id="statsBar">
+        <div>Total items: <span id="totalItemsCount">0</span></div>
+        <div>⚠️ Low stock (≤2): <span id="lowStockCount">0</span></div>
+        <div>Total quantity: <span id="totalQuantity">0</span></div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+        <table id="inventoryTable">
+            <thead>
+                <tr>
+                    <th>Part number</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Stock actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- rendered by JS -->
+            </tbody>
+        </table>
+    </div>
+    <div class="footer-note">
+        Based on OctoStool Part List · click + / − or edit quantity
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ----------------------------------------------------------------
+        // 1. Part list — all quantities initialised to 0
+        // ----------------------------------------------------------------
+        const rawPartList = [
+            { pn: "PN00001", desc: "Base", assembly: "Plate assemply", subassembly: "Basic Plate" },
+            { pn: "PN00002", desc: "Triangels", assembly: "Plate assemply", subassembly: "Basic Plate" },
+            { pn: "PN00003", desc: "Arc", assembly: "Plate assemply", subassembly: "Basic Plate" },
+            { pn: "PN00004", desc: "Roundpipe 90x5mm", assembly: "Plate assemply", subassembly: "Basic Plate" },
+            { pn: "PN00005", desc: "Bearings 40x80x18 mm", assembly: "Plate assemply", subassembly: "Basic Plate" },
+            { pn: "PN00006", desc: "Square profile20x20x2mm", assembly: "Plate assemply", subassembly: "Basic Plate" },
+            { pn: "PN00007", desc: "Plate screws", assembly: "Plate assemply", subassembly: "Basic Plate" },
+            { pn: "PN00008", desc: "Fischer", assembly: "Plate assemply", subassembly: "Basic Plate" },
+            { pn: "PN00009", desc: "Action reqired sticker", assembly: "Plate assemply", subassembly: "Basic Plate" },
+            { pn: "PN00010", desc: "Rubber 2mm", assembly: "Plate assemply", subassembly: "Rubber" },
+            { pn: "PN00011", desc: "Metal Glue", assembly: "Plate assemply", subassembly: "Rubber" },
+            { pn: "PN00012", desc: "rectangular profil 80x50x5 mm", assembly: "Plate assemply", subassembly: "Joint A" },
+            { pn: "PN00013", desc: "Roundsteel 40mm", assembly: "Plate assemply", subassembly: "Joint A" },
+            { pn: "PN00014", desc: "Roundsteel 35mm", assembly: "Plate assemply", subassembly: "Joint A" },
+            { pn: "PN00015", desc: "Caps", assembly: "Plate assemply", subassembly: "Joint A" },
+            { pn: "PN00016", desc: "Tracability plate", assembly: "Plate assemply", subassembly: "Joint A" },
+            { pn: "PN00017", desc: "Pinching sticker", assembly: "Plate assemply", subassembly: "Joint A" },
+            { pn: "PN00018", desc: "Don't step sticker", assembly: "Plate assemply", subassembly: "Joint A" },
+            { pn: "PN00019", desc: "rectangular profil 80x50x5 mm", assembly: "Plate assemply", subassembly: "Joint B" },
+            { pn: "PN00020", desc: "Roundpipe 65x5mm", assembly: "Plate assemply", subassembly: "Joint B" },
+            { pn: "PN00021", desc: "Bearings 35x55x10 mm", assembly: "Plate assemply", subassembly: "Joint B" },
+            { pn: "PN00022", desc: "Roundpipe 60,3x2mm", assembly: "Plate assemply", subassembly: "Joint B" },
+            { pn: "PN00023", desc: "Anchor", assembly: "Plate assemply", subassembly: "Joint B" },
+            { pn: "PN00024", desc: "Anchor Screw with handel", assembly: "Plate assemply", subassembly: "Joint B" },
+            { pn: "PN00025", desc: "Anchor Sticker", assembly: "Plate assemply", subassembly: "Joint B" },
+            { pn: "PN00026", desc: "Metal sheet", assembly: "Plate assemply", subassembly: "Joint B" },
+            { pn: "PN00027", desc: "Metal sheet screws", assembly: "Plate assemply", subassembly: "Joint B" },
+            { pn: "PN00028", desc: "Round cap", assembly: "Plate assemply", subassembly: "Joint B" },
+            { pn: "PN00029", desc: "Pipe cap", assembly: "Plate assemply", subassembly: "Joint B" },
+            { pn: "PN00030", desc: "Max weight sticker", assembly: "Plate assemply", subassembly: "Joint B" },
+            { pn: "PN00031", desc: "Wood", assembly: "Arc", subassembly: "Wooden Arc" },
+            { pn: "PN00032", desc: "Wood Glue", assembly: "Arc", subassembly: "Wooden Arc" },
+            { pn: "PN00033", desc: "Metal Piece", assembly: "Arc", subassembly: "Connecting piece" },
+            { pn: "PN00034", desc: "Arc screws", assembly: "Arc", subassembly: "Connecting piece" },
+            { pn: "PN00041", desc: "Basic stool", assembly: "Stool assemply", subassembly: "" },
+            { pn: "PN00042", desc: "Hydraulic", assembly: "Stool assemply", subassembly: "" },
+        ];
+
+        const inventoryMap = new Map();
+        rawPartList.forEach(item => {
+            if (!inventoryMap.has(item.pn)) {
+                inventoryMap.set(item.pn, {
+                    pn: item.pn,
+                    desc: item.desc,
+                    qty: 0,
+                    assembly: item.assembly || "",
+                    subassembly: item.subassembly || ""
+                });
+            }
+        });
+
+        let inventoryItems = Array.from(inventoryMap.values());
+        inventoryItems.sort((a, b) => a.pn.localeCompare(b.pn));
+
+        // DOM refs
+        const tbody = document.getElementById('tableBody');
+        const searchInput = document.getElementById('searchInput');
+        const totalItemsSpan = document.getElementById('totalItemsCount');
+        const lowStockSpan = document.getElementById('lowStockCount');
+        const totalQtySpan = document.getElementById('totalQuantity');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // ----------------------------------------------------------------
+        // 2. Render table
+        // ----------------------------------------------------------------
+        function render() {
+            const filterText = searchInput.value.trim().toLowerCase();
+            let visibleItems = inventoryItems;
+
+            if (filterText !== '') {
+                visibleItems = inventoryItems.filter(item => 
+                    item.pn.toLowerCase().includes(filterText) ||
+                    item.desc.toLowerCase().includes(filterText) ||
+                    item.assembly.toLowerCase().includes(filterText) ||
+                    item.subassembly.toLowerCase().includes(filterText)
+                );
+            }
+
+            if (visibleItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="none-message">No matching parts found</td></tr>`;
+            } else {
+                let html = '';
+                visibleItems.forEach(item => {
+                    let categoryLabel = '';
+                    if (item.assembly) {
+                        categoryLabel = item.assembly;
+                        if (item.subassembly) categoryLabel += ` / ${item.subassembly}`;
+                    } else {
+                        categoryLabel = '—';
+                    }
+
+                    const qtyFormatted = Number.isInteger(item.qty) ? item.qty : item.qty.toFixed(2);
+                    const lowClass = (item.qty <= 2) ? 'low' : '';
+
+                    html += `
+                        <tr data-pn="${item.pn}">
+                            <td><span class="pn">${item.pn}</span></td>
+                            <td><span class="desc">${escapeHtml(item.desc)}</span></td>
+                            <td><span class="cat">${escapeHtml(categoryLabel)}</span></td>
+                            <td>
+                                <span class="qty-badge ${lowClass}" data-pn="${item.pn}">${qtyFormatted}</span>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <button class="btn minus" data-pn="${item.pn}" data-action="decrement" ${item.qty <= 0 ? 'disabled' : ''}>−</button>
+                                    <button class="btn plus" data-pn="${item.pn}" data-action="increment">+</button>
+                                    <input class="edit-input" type="number" min="0" step="0.01" value="${item.qty}" data-pn="${item.pn}" data-action="set" style="margin-left: 0.3rem;">
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            }
+
+            attachTableEvents();
+            updateStats();
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function updateStats() {
+            const totalItems = inventoryItems.length;
+            const lowStock = inventoryItems.filter(item => item.qty <= 2).length;
+            const totalQty = inventoryItems.reduce((sum, item) => sum + item.qty, 0);
+
+            totalItemsSpan.textContent = totalItems;
+            lowStockSpan.textContent = lowStock;
+            totalQtySpan.textContent = Number.isInteger(totalQty) ? totalQty : totalQty.toFixed(2);
+        }
+
+        // ----------------------------------------------------------------
+        // 3. Event handling
+        // ----------------------------------------------------------------
+        function attachTableEvents() {
+            document.querySelectorAll('button[data-action]').forEach(btn => {
+                btn.removeEventListener('click', handleButtonClick);
+                btn.addEventListener('click', handleButtonClick);
+            });
+
+            document.querySelectorAll('input.edit-input[data-action="set"]').forEach(input => {
+                input.removeEventListener('change', handleInputChange);
+                input.addEventListener('change', handleInputChange);
+                input.removeEventListener('blur', handleInputBlur);
+                input.addEventListener('blur', handleInputBlur);
+            });
+        }
+
+        function handleButtonClick(e) {
+            const btn = e.currentTarget;
+            const pn = btn.dataset.pn;
+            const action = btn.dataset.action;
+            const item = inventoryItems.find(i => i.pn === pn);
+            if (!item) return;
+
+            if (action === 'increment') {
+                item.qty = Math.round((item.qty + 1) * 100) / 100;
+            } else if (action === 'decrement') {
+                if (item.qty <= 0) return;
+                item.qty = Math.round((item.qty - 1) * 100) / 100;
+                if (item.qty < 0) item.qty = 0;
+            }
+            render();
+        }
+
+        function handleInputChange(e) {
+            const input = e.currentTarget;
+            const pn = input.dataset.pn;
+            const item = inventoryItems.find(i => i.pn === pn);
+            if (!item) return;
+
+            let newQty = parseFloat(input.value);
+            if (isNaN(newQty) || newQty < 0) newQty = 0;
+            newQty = Math.round(newQty * 100) / 100;
+            item.qty = newQty;
+            render();
+        }
+
+        function handleInputBlur(e) {
+            const input = e.currentTarget;
+            const pn = input.dataset.pn;
+            const item = inventoryItems.find(i => i.pn === pn);
+            if (!item) return;
+            const formatted = Number.isInteger(item.qty) ? item.qty : item.qty.toFixed(2);
+            input.value = formatted;
+        }
+
+        // ----------------------------------------------------------------
+        // 4. Dark mode toggle – switches logo via CSS
+        // ----------------------------------------------------------------
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            darkModeToggle.textContent = document.body.classList.contains('dark') ? 'Light' : 'Dark';
+        });
+
+        // ----------------------------------------------------------------
+        // 5. Search listener
+        // ----------------------------------------------------------------
+        searchInput.addEventListener('input', () => {
+            render();
+        });
+
+        // ----------------------------------------------------------------
+        // 6. Initial render
+        // ----------------------------------------------------------------
+        render();
+    })();
+</script>
+</body>
+</html>
