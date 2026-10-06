@@ -60,24 +60,12 @@
             height: 56px;
             width: auto;
             display: block;
+            transition: filter 0.2s;
         }
 
-        /* Light mode: show bright logo (dark text) */
-        .logo-light {
-            display: block;
-        }
-
-        .logo-dark {
-            display: none;
-        }
-
-        /* Dark mode: show dark logo (light text) */
-        body.dark .logo-light {
-            display: none;
-        }
-
-        body.dark .logo-dark {
-            display: block;
+        /* In dark mode, invert the logo colors so dark text becomes light */
+        body.dark .logo {
+            filter: invert(1) brightness(1.8);
         }
 
         .header h1 {
@@ -506,13 +494,11 @@
 </head>
 <body>
 <div class="app">
-    <!-- Header with logo -->
+    <!-- Header with single logo (inverts in dark mode via CSS filter) -->
     <div class="header">
         <div class="logo-section">
-            <!-- BRIGHT logo (dark text) – shown in LIGHT mode -->
-            <img class="logo logo-light" src="logo-light.png" alt="Octos">
-            <!-- DARK logo (light text) – shown in DARK mode -->
-            <img class="logo logo-dark" src="logo-dark.png" alt="Octos">
+            <!-- Uses the bright logo (dark text) and inverts it in dark mode -->
+            <img class="logo" src="logo.png" alt="Octos">
             <h1>
                 Inventory
                 <span>live stock</span>
